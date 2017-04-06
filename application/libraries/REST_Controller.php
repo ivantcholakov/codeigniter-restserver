@@ -2004,7 +2004,7 @@ abstract class REST_Controller extends \CI_Controller {
         // Check if the user is logged into the system
         if ($this->_check_login($username, $password) === FALSE)
         {
-            $this->_force_login();
+            $this->_force_login('', 'auth');
         }
     }
 
@@ -2036,7 +2036,7 @@ abstract class REST_Controller extends \CI_Controller {
         // again if none given or if the user enters wrong auth information
         if (empty($digest_string))
         {
-            $this->_force_login($unique_id);
+            $this->_force_login($unique_id, 'digest');
         }
 
         // We need to retrieve authentication data from the $digest_string variable
@@ -2048,7 +2048,7 @@ abstract class REST_Controller extends \CI_Controller {
         $username = $this->_check_login($digest['username'], TRUE);
         if (array_key_exists('username', $digest) === FALSE || $username === FALSE)
         {
-            $this->_force_login($unique_id);
+            $this->_force_login($unique_id, 'digest');
         }
 
         $md5 = md5(strtoupper($this->request->method).':'.$digest['uri']);
@@ -2123,9 +2123,9 @@ abstract class REST_Controller extends \CI_Controller {
      * each time
      * @return void
      */
-    protected function _force_login($nonce = '')
+    protected function _force_login($nonce = '', $rest_auth = '')
     {
-        $rest_auth = $this->config->item('rest_auth');
+        
         $rest_realm = $this->config->item('rest_realm');
         if (strtolower($rest_auth) === 'basic')
         {
